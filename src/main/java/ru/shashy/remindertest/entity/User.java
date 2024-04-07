@@ -26,10 +26,13 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "login", length = 25)
     private String login;
+
+    @Column(name = "email", length = 55)
+    private String email;
 
     @Column(name = "password")
     private String password;
@@ -38,9 +41,12 @@ public class User implements UserDetails {
     @Column(name = "role", length = 10)
     private RoleEnum role;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @Column(name = "tg_nick")
+    private String tgNick;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
-    private List<ReminderTable> reminderTables = new ArrayList<>();
+    private List<ReminderTable> reminderTables;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

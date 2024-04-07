@@ -39,30 +39,36 @@ public class ReminderController {
 
     @DeleteMapping("/reminder/delete/{id}")
     public ResponseEntity<?> deleteRemind(
-            @PathVariable int id
+            @PathVariable Long id
     ) {
         return reminderService.deleteEntityDb(id);
     }
 
-    @GetMapping("/reminder/sort")
+    @GetMapping("/reminder/sort/{sortType}")
     public ResponseEntity<?> sortTypeRemind(
-            @RequestParam String sortType
+            @PathVariable String sortType,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        return reminderService.sortedList(sortType);
+        return reminderService.sortEntity(sortType, page, size);
     }
 
-    @GetMapping("/reminder/filter/date")
+    @GetMapping("/reminder/filter/date/{dateVal}")
     public ResponseEntity<?> filterBy(
-            @RequestParam LocalDate localDate
+            @PathVariable LocalDate dateVal,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
     ){
-        return reminderService.filterReminders(localDate);
+        return reminderService.filterByDate(dateVal, page, size);
     }
 
 
-    @GetMapping("/reminder/filter/time")
+    @GetMapping("/reminder/filter/time/{timeVal}")
     public ResponseEntity<?> filterBy(
-            @RequestParam LocalTime localTime
+            @PathVariable LocalTime timeVal,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
     ){
-        return reminderService.filterReminders(localTime);
+        return reminderService.filterByTime(timeVal, page, size);
     }
 }

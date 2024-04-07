@@ -24,3 +24,7 @@ spring:
 jwt:
   secret: qBTmv4oXFFR2GwjexDJ4t6fsIUIUhhXqlktXjXdkcyygs8nPVEwMfo29VDRRepYDVV5IkIxBMzr7OEHXEHd37w==
   jwt-lifetime: 15m
+
+smtp:
+  username: #uname
+  password: #pass

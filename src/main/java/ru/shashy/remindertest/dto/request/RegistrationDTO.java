@@ -12,5 +12,8 @@ public @Data class RegistrationDTO {
     private String password;
     @NotNull(message = "Fullname cannot be blank")
     private String fullName;
+    @NotBlank(message = "Email cannot be blank")
+    private String email;
+    private String tgNick;
 }
 

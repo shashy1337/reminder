@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-foreign-key-cascades
+      author: Igor Vasiltsev
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: reminder_table
+            baseTableSchemaName: reminder_schema
+            constraintName: fk_userid_user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+            onUpdate: CASCADE
+            validate: true

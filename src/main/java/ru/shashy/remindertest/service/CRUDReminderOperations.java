@@ -1,10 +1,7 @@
 package ru.shashy.remindertest.service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
 
 public interface CRUDReminderOperations<D, T> {
     @Transactional

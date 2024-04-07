@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 public @Data class ReminderDTO {
-    private int id;
+    private Long id;
     private String title;
     private String description;
     private LocalDateTime remind;

@@ -38,6 +38,8 @@ public class RegistrationAuthService implements AuthAndRegister{
         user.setLogin(registrationDTO.getLogin());
         user.setRole(RoleEnum.ROLE_USER);
         user.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
+        user.setEmail(registrationDTO.getEmail());
+        user.setTgNick(registrationDTO.getTgNick());
         userService.save(user);
         return ResponseEntity.ok().body("OK!");
     }

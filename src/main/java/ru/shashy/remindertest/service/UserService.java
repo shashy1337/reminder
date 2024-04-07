@@ -19,7 +19,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User findWithReminderTables(String login) {
-        return userRepository.findUserWithReminderTablesByLogin(login);
+        return userRepository.findUserWithReminders(login);
     }
 
     public User findByLogin(String login) {

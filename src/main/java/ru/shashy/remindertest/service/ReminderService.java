@@ -11,7 +11,8 @@ import ru.shashy.remindertest.entity.ReminderTable;
 import ru.shashy.remindertest.entity.User;
 import ru.shashy.remindertest.exception.ForbiddenException;
 import ru.shashy.remindertest.repository.ReminderRepository;
-import ru.shashy.remindertest.util.AuthenticationUtil;
+import ru.shashy.remindertest.service.filterAndSort.FilteringAndSortingResponse;
+import ru.shashy.remindertest.util.AuthenticationHelper;
 import ru.shashy.remindertest.util.PaginationUtil;
 
 import java.time.LocalDate;
@@ -22,33 +23,27 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ReminderService extends AuthenticationUtil
-        implements CRUDReminderOperations<ReminderDTO, Integer> {
+public class ReminderService extends AuthenticationHelper
+        implements CRUDReminderOperations<ReminderDTO, Long>, FilteringAndSortingResponse {
 
     private final ReminderRepository reminderRepository;
     private final PaginationUtil paginationUtil;
 
     @Override
     public ResponseEntity<?> createEntityDb(ReminderDTO dto) {
-        User user = getUserAuthEntity();
         var reminderTable = new ReminderTable(
                 dto.getTitle(),
                 dto.getDescription(),
                 dto.getRemind(),
-                user);
+                getUserAuthEntity());
         reminderRepository.save(reminderTable);
         return ResponseEntity.ok("OK!");
     }
 
     @Override
     public ResponseEntity<?> readEntityDb(int page, int size) {
-        /*Authentication user = SecurityContextHolder.getContext().getAuthentication();
-        User user1 = userService.findWithReminderTables((String) user.getPrincipal());
         List<ReminderTable> allTables =
-                paginationUtil.getPage(user1.getReminderTables(), page, size);*/
-        User userEntity = getUserAuthEntity();
-        List<ReminderTable> allTables =
-                paginationUtil.getPage(userEntity.getReminderTables(), page, size);
+                paginationUtil.getPage(getUserAuthEntityWithReminders().getReminderTables(), page, size);
         return ResponseEntity.ok(allTables);
     }
 
@@ -67,7 +62,7 @@ public class ReminderService extends AuthenticationUtil
     }
 
     @Override
-    public ResponseEntity<?> deleteEntityDb(Integer id) {
+    public ResponseEntity<?> deleteEntityDb(Long id) {
         ReminderTable reminderTable =
                 reminderRepository.findById(id)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reminder NOT_FOUND"));
@@ -79,42 +74,44 @@ public class ReminderService extends AuthenticationUtil
         return ResponseEntity.ok("DELETED");
     }
 
-    public ResponseEntity<?> sortedList(String sortType) {
-        User user = getUserAuthEntity();
-        List<ReminderTable> allReminders = user.getReminderTables();
+
+    @Override
+    public ResponseEntity<?> sortEntity(String sortType, int page, int size) {
+
+        List<ReminderTable> allReminders = getUserAuthEntityWithReminders().getReminderTables();
         switch (sortType) {
             case "name" -> {
                 allReminders.sort(Comparator.comparing(ReminderTable::getTitle));
-                return ResponseEntity.ok(allReminders);
+                return ResponseEntity.ok(paginationUtil.getPage(allReminders, page, size));
             }
             case "date" -> {
                 allReminders.sort(Comparator.comparing(r -> r.getRemind().toLocalDate()));
-                return ResponseEntity.ok(allReminders);
+                return ResponseEntity.ok(paginationUtil.getPage(allReminders, page, size));
             }
             case "time" -> {
                 allReminders.sort(Comparator.comparing(r -> r.getRemind().toLocalTime()));
-                return ResponseEntity.ok(allReminders);
+                return ResponseEntity.ok(paginationUtil.getPage(allReminders, page, size));
             }
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
-
-    public ResponseEntity<?> filterReminders(LocalDate date) {
-        User user = getUserAuthEntity();
-        List<ReminderTable> allFilterRemindersByDate = user.getReminderTables()
+    @Override
+    public ResponseEntity<?> filterByDate(LocalDate localDate, int page, int size) {
+        List<ReminderTable> allFilterRemindersByDate = getUserAuthEntityWithReminders().getReminderTables()
                 .stream()
-                .filter(c -> c.getRemind() != null && c.getRemind().toLocalDate().equals(date))
+                .filter(c -> c.getRemind() != null && c.getRemind().toLocalDate().equals(localDate))
                 .toList();
-        return ResponseEntity.ok(allFilterRemindersByDate);
+        return ResponseEntity.ok(paginationUtil.getPage(allFilterRemindersByDate, page, size));
     }
 
-    public ResponseEntity<?> filterReminders(LocalTime time) {
-        User user = getUserAuthEntity();
-        List<ReminderTable> allFilterRemindersByTime = getUserAuthEntity().getReminderTables()
+    @Override
+    public ResponseEntity<?> filterByTime(LocalTime localTime, int page, int size) {
+        List<ReminderTable> allFilterRemindersByTime = getUserAuthEntityWithReminders().getReminderTables()
                 .stream()
-                .filter(c -> c.getRemind() != null && c.getRemind().toLocalTime().equals(time))
+                .filter(c -> c.getRemind() != null && c.getRemind().toLocalTime().equals(localTime))
                 .toList();
+        paginationUtil.getPage(allFilterRemindersByTime, page, size);
         return ResponseEntity.ok(allFilterRemindersByTime);
     }
 }

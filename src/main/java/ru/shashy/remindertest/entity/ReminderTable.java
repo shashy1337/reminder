@@ -22,7 +22,7 @@ public class ReminderTable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Integer id;
+    private Long id;
 
     @Column(name = "title")
     private String title;
@@ -33,9 +33,11 @@ public class ReminderTable {
     @Column(name = "remind")
     private LocalDateTime remind;
 
+    @Column(name = "send")
+    private Boolean send = false;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id")
     private User user;
 

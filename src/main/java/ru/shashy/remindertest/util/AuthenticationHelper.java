@@ -12,8 +12,7 @@ import ru.shashy.remindertest.service.UserService;
 
 @Component
 @NoArgsConstructor
-@Slf4j
-public abstract class AuthenticationUtil {
+public abstract class AuthenticationHelper {
 
     @Autowired
     protected UserService userService;
@@ -21,12 +20,11 @@ public abstract class AuthenticationUtil {
     protected ModelMapper modelMapper;
     protected User getUserAuthEntity(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info((String) authentication.getPrincipal());
         return userService.findByLogin((String) authentication.getPrincipal());
     }
 
-    protected String getUserAuthFromContext() {
+    protected User getUserAuthEntityWithReminders() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (String) authentication.getPrincipal();
+        return userService.findWithReminderTables((String) authentication.getPrincipal());
     }
 }
